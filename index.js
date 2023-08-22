@@ -1,5 +1,5 @@
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 const express = require('express');
 const app = express();
@@ -34,6 +34,15 @@ const conn = mysql.createConnection({
   database: 'db_zenblog' /* MySQL Database */
 });
 
+/**
+ * API Response
+ *
+ * @return response()
+ */
+function apiResponse(results){
+  return JSON.stringify({"status": 200, "error": null, "response": results});
+}
+
 /*------------------------------------------
 --------------------------------------------
 Shows Mysql Connect
@@ -45,20 +54,33 @@ conn.connect((err) =>{
 });
 
 /**
+ * Get All Items
+ *
+ * @return response()
+ */
+app.get('/api/posts',(req, res) => {
+  let sqlQuery = "SELECT * FROM posts";
+
+  let query = conn.query(sqlQuery, (err, results) => {
+    if(err) throw err;
+    res.send(apiResponse(results));
+  });
+});
+
+/**
  * Get Single Item
  *
  * @return response()
  */
 app.get('/api/posts/:id',(req, res) => {
-  // let sqlQuery = "SELECT * FROM items WHERE id=" + req.params.id;
-  //
-  // let query = conn.query(sqlQuery, (err, results) => {
-  //   if(err) throw err;
-  //   res.send(apiResponse(results));
-  // });
   let postId = req.params.id;
   console.log(postId);
-  res.send('Get Post With Id: ' + postId);
+  let sqlQuery = "SELECT * FROM posts WHERE id=" + postId;
+
+  let query = conn.query(sqlQuery, (err, results) => {
+    if(err) throw err;
+    res.send(apiResponse(results));
+  });
 });
 
 /**
@@ -67,17 +89,15 @@ app.get('/api/posts/:id',(req, res) => {
  * @return response()
  */
 app.post('/api/posts',(req, res) => {
-  // let data = {title: req.body.title, body: req.body.body};
-  //
-  // let sqlQuery = "INSERT INTO posts SET ?";
-  //
-  // let query = conn.query(sqlQuery, data,(err, results) => {
-  //   if(err) throw err;
-  //   res.send(apiResponse(results));
-  // });
-  let data = {title: req.body.title, body: req.body.body}
-  console.log(data);
-  res.send('Get Post With Id: ' + data);
+  let body = req.body;
+  let data = {title: body.title, body: req.body.body};
+
+  let sqlQuery = "INSERT INTO posts SET ?";
+
+  let query = conn.query(sqlQuery, data,(err, results) => {
+    if(err) throw err;
+    res.send(apiResponse(results));
+  });
 });
 
 
