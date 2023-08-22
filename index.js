@@ -28,9 +28,20 @@ Database Connection
 --------------------------------------------*/
 const conn = mysql.createConnection({
   host: 'localhost',
+  port: '3306',
   user: 'root', /* MySQL User */
   password: 'root123', /* MySQL Password */
   database: 'db_zenblog' /* MySQL Database */
+});
+
+/*------------------------------------------
+--------------------------------------------
+Shows Mysql Connect
+--------------------------------------------
+--------------------------------------------*/
+conn.connect((err) =>{
+  if(err) throw err;
+  console.log('Mysql Connected with App...');
 });
 
 /**
