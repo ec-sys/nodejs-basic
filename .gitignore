@@ -46,3 +46,4 @@ dist
 *.iws
 *.iml
 *.ipr
+package-lock.json
