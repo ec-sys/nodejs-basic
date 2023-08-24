@@ -1,5 +1,3 @@
-// console.log(process.env.MYSQL_HOST);
-
 const config = {
   db: {
     host: 'localhost',

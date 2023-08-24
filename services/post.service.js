@@ -17,12 +17,12 @@ async function getMultiple(page = 1) {
   };
 }
 
-async function create(programmingLanguage) {
+async function create(param) {
   const result = await db.query(
       `INSERT INTO programming_languages 
     (name, released_year, githut_rank, pypl_rank, tiobe_rank) 
     VALUES 
-    ("${programmingLanguage.name}", ${programmingLanguage.released_year}, ${programmingLanguage.githut_rank}, ${programmingLanguage.pypl_rank}, ${programmingLanguage.tiobe_rank})`
+    ("${param.name}", ${param.released_year}, ${param.githut_rank}, ${param.pypl_rank}, ${param.tiobe_rank})`
   );
 
   let message = "Error in creating programming language";
@@ -34,11 +34,11 @@ async function create(programmingLanguage) {
   return { message };
 }
 
-async function update(id, programmingLanguage) {
+async function update(id, param) {
   const result = await db.query(
       `UPDATE programming_languages 
-    SET name="${programmingLanguage.name}", released_year=${programmingLanguage.released_year}, githut_rank=${programmingLanguage.githut_rank}, 
-    pypl_rank=${programmingLanguage.pypl_rank}, tiobe_rank=${programmingLanguage.tiobe_rank} 
+    SET name="${param.name}", released_year=${param.released_year}, githut_rank=${param.githut_rank}, 
+    pypl_rank=${param.pypl_rank}, tiobe_rank=${param.tiobe_rank} 
     WHERE id=${id}`
   );
 
