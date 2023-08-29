@@ -5,8 +5,8 @@ const config = require("../config");
 async function getMultiple(page = 1) {
   const offset = helper.getOffset(page, config.listPerPage);
   const rows = await db.query(
-      `SELECT id, name, released_year, githut_rank, pypl_rank, tiobe_rank 
-    FROM programming_languages LIMIT ${offset},${config.listPerPage}`
+      `SELECT id, title, content, created, creator, description, is_public, updated, updater, view_count
+    FROM posts LIMIT ${offset},${config.listPerPage}`
   );
   const data = helper.emptyOrRows(rows);
   const meta = { page };
@@ -19,16 +19,17 @@ async function getMultiple(page = 1) {
 
 async function create(param) {
   const result = await db.query(
-      `INSERT INTO programming_languages 
-    (name, released_year, githut_rank, pypl_rank, tiobe_rank) 
+      `INSERT INTO posts 
+    (title, content, created, creator, description, is_public, updated, updater, view_count) 
     VALUES 
-    ("${param.name}", ${param.released_year}, ${param.githut_rank}, ${param.pypl_rank}, ${param.tiobe_rank})`
+    ("${param.title}", "${param.content}", "${param.created}", "${param.creator}", "${param.description}", 
+    ${param.is_public ? 1 : 0}, "${param.updated}", "${param.updater}", ${param.view_count})`
   );
 
-  let message = "Error in creating programming language";
+  let message = "Error in creating post";
 
   if (result.affectedRows) {
-    message = "Programming language created successfully";
+    message = "Post created successfully";
   }
 
   return { message };
@@ -36,16 +37,18 @@ async function create(param) {
 
 async function update(id, param) {
   const result = await db.query(
-      `UPDATE programming_languages 
-    SET name="${param.name}", released_year=${param.released_year}, githut_rank=${param.githut_rank}, 
-    pypl_rank=${param.pypl_rank}, tiobe_rank=${param.tiobe_rank} 
+      `UPDATE posts 
+    SET title="${param.title}", content="${param.content}", created="${param.created}", 
+    creator="${param.creator}", description="${param.description}", 
+    is_public=${param.is_public ? 1 : 0}, updated="${param.updated}", updater="${param.updater}", 
+    view_count=${param.view_count}
     WHERE id=${id}`
   );
 
-  let message = "Error in updating programming language";
+  let message = "Error in updating post";
 
   if (result.affectedRows) {
-    message = "Programming language updated successfully";
+    message = "Post updated successfully";
   }
 
   return { message };
@@ -53,13 +56,13 @@ async function update(id, param) {
 
 async function remove(id) {
   const result = await db.query(
-      `DELETE FROM programming_languages WHERE id=${id}`
+      `DELETE FROM posts WHERE id=${id}`
   );
 
-  let message = "Error in deleting programming language";
+  let message = "Error in deleting post";
 
   if (result.affectedRows) {
-    message = "Programming language deleted successfully";
+    message = "Post deleted successfully";
   }
 
   return { message };
