@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const postRouter = require("./routes/post.router");
+const auth = require("./middlewares/auth");
 
 app.use(express.json());
 app.use(
@@ -11,10 +12,15 @@ app.use(
 );
 
 app.get("/", (req, res) => {
+  throw new Error('An error occurred');
   res.json({ message: "ok" });
 });
 
-app.use("/api/posts", postRouter);
+app.post("/welcome", auth, (req, res) => {
+  res.status(200).send("Welcome 🙌 ");
+});
+
+app.use("/api/admin/posts", auth, postRouter);
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
