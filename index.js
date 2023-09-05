@@ -1,36 +1,16 @@
-const express = require("express");
-const app = express();
-const port = 3000;
-const postRouter = require("./routes/post.router");
-const auth = require("./middlewares/auth");
-
-app.use(express.json());
-app.use(
-    express.urlencoded({
-      extended: true,
-    })
-);
-
-app.get("/", (req, res) => {
-  throw new Error('An error occurred');
-  res.json({ message: "ok" });
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const app = (0, express_1.default)();
+const port = process.env.PORT;
+app.get('/', (req, res) => {
+    res.send('Express + TypeScript Server');
 });
-
-app.post("/welcome", auth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
-});
-
-app.use("/api/admin/posts", auth, postRouter);
-
-/* Error handler middleware */
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  console.error(err.message, err.stack);
-  res.status(statusCode).json({ message: err.message });
-
-  return;
-});
-
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
