@@ -1,7 +1,7 @@
 import { OkPacket } from "mysql2";
 import connection from "../db";
 
-import Tutorial from "../models/tutorial.model";
+import Tutorial from "../models/Tutorial";
 
 interface ITutorialRepository {
   save(tutorial: Tutorial): Promise<Tutorial>;

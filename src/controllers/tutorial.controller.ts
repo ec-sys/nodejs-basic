@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Tutorial from "../models/tutorial.model";
+import Tutorial from "../models/Tutorial";
 import tutorialRepository from "../repositories/tutorial.repository";
 
 export default class TutorialController {

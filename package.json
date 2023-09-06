@@ -2,7 +2,7 @@
   "name": "js-basic",
   "version": "1.0.0",
   "description": "nodemon index.js\r node index.js",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
