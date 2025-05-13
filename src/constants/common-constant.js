@@ -1,0 +1,2 @@
+const API_KEY = '1234567890';
+const MAX_USERS = 100;
