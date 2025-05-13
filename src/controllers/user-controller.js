@@ -1,29 +1,50 @@
-// Simulate a simple in-memory user list
-const users = [
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' }
-];
+const userService = require('../services/user-service');
 
-exports.getAllUsers = (req, res) => {
-    res.json(users);
-};
-
-exports.getUserById = (req, res) => {
-    const userId = parseInt(req.params.id);
-    const user = users.find(u => u.id === userId);
-    if (user) {
-        res.json(user);
-    } else {
-        res.status(404).json({ message: 'User not found' });
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await userService.getUsers();
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
 
-exports.createUser = (req, res) => {
-    const { name } = req.body;
-    const newUser = {
-        id: users.length + 1,
-        name
-    };
-    users.push(newUser);
-    res.status(201).json(newUser);
+exports.getUserById = async (req, res) => {
+    try {
+        const user = await userService.getUser(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.createUser = async (req, res) => {
+    try {
+        const newUser = await userService.createUser(req.body);
+        res.status(201).json(newUser);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        await userService.deleteUser(req.params.id);
+        res.status(200).json({message: 'Deleted Successfully'});
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+exports.updateUser = async (req, res) => {
+    try {
+        const updatedUser = await userService.updateUser(req.params.id, req.body);
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 };
