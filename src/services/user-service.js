@@ -33,7 +33,7 @@ class UserService {
     }
 
     checkRequiredId(id) {
-        if(stringUtil.isBlank(id)) {
+        if (stringUtil.isBlank(id)) {
             throw new Error('Id is required!')
         }
     }

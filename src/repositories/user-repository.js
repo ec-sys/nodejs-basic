@@ -10,7 +10,7 @@ class UserRepository {
     }
 
     async deleteById(id) {
-        return await User.deleteOne({_id : id});
+        return await User.deleteOne({_id: id});
     }
 
     async create(userData) {
@@ -19,7 +19,7 @@ class UserRepository {
     }
 
     async update(id, data) {
-        return await User.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+        return await User.findByIdAndUpdate(id, data, {new: true, runValidators: true});
     }
 }
 

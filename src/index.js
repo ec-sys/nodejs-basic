@@ -6,11 +6,11 @@ const app = express();
 const port = 3000;
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+    res.send('Hello World!');
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+    console.log(`Example app listening on port ${port}`);
 })
 
 /*------------------------------------------
@@ -27,11 +27,11 @@ Database Connection
 --------------------------------------------
 --------------------------------------------*/
 const conn = mysql.createConnection({
-  host: 'localhost',
-  port: '3306',
-  user: 'root', /* MySQL User */
-  password: 'root123', /* MySQL Password */
-  database: 'db_zenblog' /* MySQL Database */
+    host: 'localhost',
+    port: '3306',
+    user: 'root', /* MySQL User */
+    password: 'root123', /* MySQL Password */
+    database: 'db_zenblog' /* MySQL Database */
 });
 
 /**
@@ -39,8 +39,8 @@ const conn = mysql.createConnection({
  *
  * @return response()
  */
-function apiResponse(results){
-  return JSON.stringify({"status": 200, "error": null, "response": results});
+function apiResponse(results) {
+    return JSON.stringify({"status": 200, "error": null, "response": results});
 }
 
 /*------------------------------------------
@@ -48,9 +48,9 @@ function apiResponse(results){
 Shows Mysql Connect
 --------------------------------------------
 --------------------------------------------*/
-conn.connect((err) =>{
-  if(err) throw err;
-  console.log('Mysql Connected with App...');
+conn.connect((err) => {
+    if (err) throw err;
+    console.log('Mysql Connected with App...');
 });
 
 /**
@@ -58,13 +58,13 @@ conn.connect((err) =>{
  *
  * @return response()
  */
-app.get('/api/posts',(req, res) => {
-  let sqlQuery = "SELECT * FROM posts";
+app.get('/api/posts', (req, res) => {
+    let sqlQuery = "SELECT * FROM posts";
 
-  let query = conn.query(sqlQuery, (err, results) => {
-    if(err) throw err;
-    res.send(apiResponse(results));
-  });
+    let query = conn.query(sqlQuery, (err, results) => {
+        if (err) throw err;
+        res.send(apiResponse(results));
+    });
 });
 
 /**
@@ -72,15 +72,15 @@ app.get('/api/posts',(req, res) => {
  *
  * @return response()
  */
-app.get('/api/posts/:id',(req, res) => {
-  let postId = req.params.id;
-  console.log(postId);
-  let sqlQuery = "SELECT * FROM posts WHERE id=" + postId;
+app.get('/api/posts/:id', (req, res) => {
+    let postId = req.params.id;
+    console.log(postId);
+    let sqlQuery = "SELECT * FROM posts WHERE id=" + postId;
 
-  let query = conn.query(sqlQuery, (err, results) => {
-    if(err) throw err;
-    res.send(apiResponse(results));
-  });
+    let query = conn.query(sqlQuery, (err, results) => {
+        if (err) throw err;
+        res.send(apiResponse(results));
+    });
 });
 
 /**
@@ -88,16 +88,16 @@ app.get('/api/posts/:id',(req, res) => {
  *
  * @return response()
  */
-app.post('/api/posts',(req, res) => {
-  let body = req.body;
-  let data = {title: body.title, body: req.body.body};
+app.post('/api/posts', (req, res) => {
+    let body = req.body;
+    let data = {title: body.title, body: req.body.body};
 
-  let sqlQuery = "INSERT INTO posts SET ?";
+    let sqlQuery = "INSERT INTO posts SET ?";
 
-  let query = conn.query(sqlQuery, data,(err, results) => {
-    if(err) throw err;
-    res.send(apiResponse(results));
-  });
+    let query = conn.query(sqlQuery, data, (err, results) => {
+        if (err) throw err;
+        res.send(apiResponse(results));
+    });
 });
 
 
@@ -106,11 +106,11 @@ app.post('/api/posts',(req, res) => {
  *
  * @return response()
  */
-app.put('/api/posts/:id',(req, res) => {
-  let sqlQuery = "UPDATE items SET title='"+req.body.title+"', body='"+req.body.body+"' WHERE id="+req.params.id;
+app.put('/api/posts/:id', (req, res) => {
+    let sqlQuery = "UPDATE items SET title='" + req.body.title + "', body='" + req.body.body + "' WHERE id=" + req.params.id;
 
-  let query = conn.query(sqlQuery, (err, results) => {
-    if(err) throw err;
-    res.send(apiResponse(results));
-  });
+    let query = conn.query(sqlQuery, (err, results) => {
+        if (err) throw err;
+        res.send(apiResponse(results));
+    });
 });
