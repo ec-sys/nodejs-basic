@@ -1,5 +1,7 @@
 const userRepository = require('../repositories/user-repository');
 const stringUtil = require('../utils/string-util');
+const cryptUtil = require('../utils/crypt-util');
+const externalApiService = require('../thirdParties/external-api-service')
 
 class UserService {
     async getUsers() {
@@ -7,11 +9,24 @@ class UserService {
     }
 
     async getUser(id) {
-        return await userRepository.findById(id);
+        let user = await userRepository.findById(id);
+        let response = {
+            id: user._id,
+            name: user.name
+        }
+        if (user.age > 18) {
+            response.text = "He is OK";
+        } else {
+            response.text = "He is BAD";
+        }
+        response.greeting = await externalApiService.fetchGreeting();
+        return response;
     }
 
     async createUser(data) {
         this.checkInputUser(data);
+        let hashPassword = cryptUtil.hashPassword(data.password);
+        data.password = hashPassword;
         return await userRepository.create(data);
     }
 
@@ -22,13 +37,12 @@ class UserService {
 
     async updateUser(id, data) {
         this.checkRequiredId(id);
-        this.checkInputUser(data);
         return await userRepository.update(id, data);
     }
 
     checkInputUser(data) {
-        if (stringUtil.isBlank(data.name) || stringUtil.isBlank(data.email)) {
-            throw new Error('Name And Email are required');
+        if (stringUtil.isBlank(data.name) || stringUtil.isBlank(data.email) || stringUtil.isBlank(data.password)) {
+            throw new Error('Name, Email, Password are required');
         }
     }
 

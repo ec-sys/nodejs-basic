@@ -1,12 +1,13 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+
 class CryptUtil {
-    static hashPassword(plaintextPassword) {
-        return bcrypt.hashSync(plaintextPassword, saltRounds);
+    static hashPassword(plainPassword) {
+        return bcrypt.hashSync(plainPassword, saltRounds);
     }
 
-    static comparePassword(plaintextPassword, hashPassword) {
-        return bcrypt.compareSync(plaintextPassword, hashPassword);
+    static comparePassword(plainPassword, hashPassword) {
+        return bcrypt.compareSync(plainPassword, hashPassword);
     }
 }
 

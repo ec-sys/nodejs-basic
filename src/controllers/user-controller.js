@@ -2,8 +2,15 @@ const userService = require('../services/user-service');
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await userService.getUsers();
-        res.json(users);
+        // const users = await userService.getUsers();
+        // res.json(users);
+        userService.getUsers()
+            .then((users) => {
+                res.json(users);
+            })
+            .catch((error) => {
+                res.status(500).json({message: error.message});
+            });
     } catch (err) {
         res.status(500).json({message: err.message});
     }

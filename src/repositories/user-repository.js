@@ -1,4 +1,5 @@
 const User = require('../models/user-model');
+const commonUtil = require('../utils/common-util');
 
 class UserRepository {
     async findAll() {
@@ -6,7 +7,7 @@ class UserRepository {
     }
 
     async findById(id) {
-        return await User.findById(id);
+        return User.findById(id);
     }
 
     async deleteById(id) {
@@ -20,6 +21,10 @@ class UserRepository {
 
     async update(id, data) {
         return await User.findByIdAndUpdate(id, data, {new: true, runValidators: true});
+    }
+
+    async findByEmail(email) {
+        return User.findOne({email: email});
     }
 }
 
