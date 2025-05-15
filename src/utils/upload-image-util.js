@@ -4,7 +4,7 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 // Create uploads folder if it doesn't exist
-const uploadDir = path.join(__dirname, `../../${process.env.UPLOAD_PATH || 'uploads'}`);
+const uploadDir = path.join(__dirname, `../../${process.env.UPLOAD_IMAGE_PATH || 'uploads/images'}`);
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -31,8 +31,8 @@ const fileFilter = (req, file, cb) => {
     cb(null, true);
 };
 
-// Create multer upload instance
-const upload = multer({
+// Create multer uploadImageUtil instance
+const uploadImageUtil = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
@@ -40,4 +40,4 @@ const upload = multer({
     }
 });
 
-module.exports = upload;
+module.exports = uploadImageUtil;

@@ -33,7 +33,7 @@ exports.uploadImage = asyncHandler(async (req, res) => {
             _id: image._id,
             fileName: image.fileName,
             originalName: image.originalName,
-            url: `/${process.env.UPLOAD_PATH || 'uploads'}/${image.filename}`,
+            url: `/${process.env.UPLOAD_IMAGE_PATH || 'uploads'}/${image.filename}`,
             message: 'Image uploaded successfully'
         });
     } catch (error) {
