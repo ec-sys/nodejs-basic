@@ -1,5 +1,5 @@
 const userService = require('../services/user-service');
-const { logger } = require('../utils/logger');
+const logger = require('../utils/logger');
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -19,11 +19,12 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        logger.info('Sample logger', {
-            requestId: req.requestId
-        });
-
         const user = await userService.getUser(req.params.id);
+
+        logger.info('Application started');
+        logger.warn('This is a warning');
+        logger.error('Something went wrong!', new Error('Test error'));
+
         if (!user) return res.status(404).json({message: 'User not found'});
         res.json(user);
     } catch (err) {

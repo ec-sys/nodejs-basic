@@ -4,8 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./configs/db-config');
 
 const morgan = require('morgan');
-const { initializeElastic } = require('./configs/elastic-config');
-const { apiLogger } = require('./middlewares/logger-middleware');
+const { loggerMiddleware } = require('./middlewares/logger-middleware');
 
 // Load env vars
 dotenv.config();
@@ -14,7 +13,8 @@ dotenv.config();
 connectDB();
 
 // Initialize Elasticsearch
-initializeElastic();
+// const { initializeElastic } = require('./configs/elastic-config');
+// initializeElastic();
 
 // Route files
 const authRoutes = require('./routes/auth-route');
@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // API logger middleware
-app.use(apiLogger);
+app.use(loggerMiddleware);
 
 // Routing
 app.use('/api/users', userRoutes);
