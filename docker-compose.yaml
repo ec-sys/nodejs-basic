@@ -6,7 +6,7 @@ services:
     image: mongo:6.0
     container_name: mongo1
     ports:
-      - 27017:27017
+      - 27027:27017
     environment:
       - MONGO_INITDB_REPLICA_SET_NAME=rs0
     volumes:
@@ -18,7 +18,7 @@ services:
     image: mongo:6.0
     container_name: mongo2
     ports:
-      - 27018:27017
+      - 27028:27017
     environment:
       - MONGO_INITDB_REPLICA_SET_NAME=rs0
     volumes:
@@ -30,7 +30,7 @@ services:
     image: mongo:6.0
     container_name: mongo3
     ports:
-      - 27019:27017
+      - 27029:27017
     environment:
       - MONGO_INITDB_REPLICA_SET_NAME=rs0
     volumes:
@@ -65,7 +65,7 @@ services:
 
   # Elasticsearch
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.1
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -85,7 +85,7 @@ services:
 
   # Kibana
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.4
+    image: docker.elastic.co/kibana/kibana:9.0.1
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
@@ -99,7 +99,7 @@ services:
   # Redis
   redis:
     image: redis:7
-    container_name: redis
+    container_name: redis_cache
     ports:
       - 6379:6379
     volumes:

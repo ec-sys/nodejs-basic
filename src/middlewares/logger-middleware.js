@@ -1,29 +1,47 @@
-const logger = require('../utils/logger');
+const { logToElastic } = require('../utils/logger');
+const { v4: uuidv4 } = require('uuid');
 
-const loggerMiddleware = (req, res, next) => {
-    // Original URL path
-    const path = req.originalUrl || req.url;
+// Middleware to log API requests and responses
+const apiLogger = (req, res, next) => {
+    // Generate a unique request ID
+    const requestId = uuidv4();
+    req.requestId = requestId;
 
-    // Start time of request
-    const start = new Date();
+    // Record start time
+    const startTime = Date.now();
 
-    // When response is finished
-    res.on('finish', () => {
-        const duration = new Date() - start;
+    // Record original end function
+    const originalEnd = res.end;
 
-        // Log request details
-        logger.info('API Request', {
+    // Override end function
+    res.end = function(chunk, encoding) {
+        // Calculate response time
+        const responseTime = Date.now() - startTime;
+
+        // Restore original end function
+        res.end = originalEnd;
+
+        // Call original end function
+        res.end(chunk, encoding);
+
+        // Prepare log data
+        const logData = {
+            requestId,
             method: req.method,
-            path,
-            statusCode: res.statusCode,
-            duration,
+            url: req.originalUrl,
+            status: res.statusCode,
+            responseTime,
+            userId: req.user ? req.user.id : 'unauthenticated',
+            userAgent: req.headers['user-agent'],
             ip: req.ip,
-            userAgent: req.get('user-agent') || '',
-            userId: req.user ? req.user.id : 'unauthenticated'
-        });
-    });
+            message: `${req.method} ${req.originalUrl} ${res.statusCode} ${responseTime}ms`
+        };
+
+        // Log to Elasticsearch
+        logToElastic(logData);
+    };
 
     next();
 };
 
-module.exports = { loggerMiddleware };
+module.exports = { apiLogger };
