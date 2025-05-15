@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  # MongoDB Replica Set
+  mongo1:
+    image: mongo:6.0
+    container_name: mongo1
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_REPLICA_SET_NAME=rs0
+    volumes:
+      - mongo1-data:/data/db
+    networks:
+      - mongo-cluster
+
+  mongo2:
+    image: mongo:6.0
+    container_name: mongo2
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_REPLICA_SET_NAME=rs0
+    volumes:
+      - mongo2-data:/data/db
+    networks:
+      - mongo-cluster
+
+  mongo3:
+    image: mongo:6.0
+    container_name: mongo3
+    ports:
+      - 27019:27017
+    environment:
+      - MONGO_INITDB_REPLICA_SET_NAME=rs0
+    volumes:
+      - mongo3-data:/data/db
+    networks:
+      - mongo-cluster
+
+  mongoinit:
+    image: mongo:6.0
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    entrypoint: >
+      bash -c '
+        sleep 5;
+        echo "Initiating replica set...";
+        mongosh --host mongo1 --eval "
+          rs.initiate({
+            _id: \"rs0\",
+            members: [
+              { _id: 0, host: \"mongo1:27017\" },
+              { _id: 1, host: \"mongo2:27017\" },
+              { _id: 2, host: \"mongo3:27017\" }
+            ]
+          })
+        ";
+        sleep 5;
+      '
+    networks:
+      - mongo-cluster
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elk
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  # Redis
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+volumes:
+  mongo1-data:
+  mongo2-data:
+  mongo3-data:
+  esdata:
+  redis-data:
+
+networks:
+  mongo-cluster:
+  elk:
+  app-network:
