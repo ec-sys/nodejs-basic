@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./configs/db-config');
 
 const morgan = require('morgan');
-const { loggerMiddleware } = require('./middlewares/logger-middleware');
+const { apiLogger } = require('./middlewares/logger-middleware');
 
 // Load env vars
 dotenv.config();
@@ -20,6 +20,7 @@ connectDB();
 const authRoutes = require('./routes/auth-route');
 const userRoutes = require('./routes/user-route');
 const publicRoutes = require('./routes/public-route');
+const uploadRoutes = require('./routes/upload-route')
 
 // Create Express app
 const app = express();
@@ -36,11 +37,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // API logger middleware
-app.use(loggerMiddleware);
+app.use(apiLogger);
 
 // Routing
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
 
 module.exports = app;

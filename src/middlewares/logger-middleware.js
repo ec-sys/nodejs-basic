@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 
-const loggerMiddleware = (req, res, next) => {
+const apiLogger = (req, res, next) => {
     // Original URL path
     const path = req.originalUrl || req.url;
 
@@ -26,4 +26,4 @@ const loggerMiddleware = (req, res, next) => {
     next();
 };
 
-module.exports = { loggerMiddleware };
+module.exports = { apiLogger };
