@@ -26,7 +26,10 @@ function generateAccessToken(user, roleNames, tokenId) {
 
 function generateRefreshToken(user, tokenId) {
     let payload = {
-        id: user._id
+        tenant: {},
+        user: {
+            id: user._id
+        }
     }
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
@@ -87,6 +90,25 @@ class AuthService {
             accessToken: generateAccessToken(user, roleNames, tokenId.accessJti),
             refreshToken: generateRefreshToken(user, tokenId.refreshJti)
         }
+    }
+    async createToken(user) {
+        // Get role names
+        let roleNames = [];
+        let roles = await roleRepository.findByIds(user.roleIds);
+        roles.forEach((item) => {
+            roleNames.push(item.name);
+        });
+
+        let tokenId = await saveTokenId(user);
+        return {
+            accessToken: generateAccessToken(user, roleNames, tokenId.accessJti),
+            refreshToken: generateRefreshToken(user, tokenId.refreshJti)
+        }
+    }
+
+    async refreshToken(userId) {
+        let user = await userRepository.findById(userId);
+        return this.createToken(user);
     }
 }
 
