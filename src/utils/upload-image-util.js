@@ -1,5 +1,5 @@
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const fileUtil = require("./file-util");
 
 // Create uploads folder if it doesn't exist

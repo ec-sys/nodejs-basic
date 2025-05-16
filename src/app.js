@@ -2,9 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./configs/db-config');
-
 const morgan = require('morgan');
-const { apiLogger } = require('./middlewares/logger-middleware');
+const {apiLogger} = require('./middlewares/logger-middleware');
 
 // Load env vars
 dotenv.config();
@@ -15,6 +14,10 @@ connectDB();
 // Initialize Elasticsearch
 // const { initializeElastic } = require('./configs/elastic-config');
 // initializeElastic();
+
+// Initialize Redis
+const {initializeRedis} = require('./configs/redis-config')
+initializeRedis();
 
 // Route files
 const authRoutes = require('./routes/auth-route');
@@ -47,7 +50,7 @@ app.use('/api/upload', uploadRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok', message: 'Server is running' });
+    res.status(200).json({status: 'ok', message: 'Server is running'});
 });
 
 module.exports = app;

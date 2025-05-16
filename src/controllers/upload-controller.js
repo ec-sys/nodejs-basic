@@ -8,7 +8,7 @@ exports.uploadImage = asyncHandler(async (req, res) => {
     let userId = req.user.id;
     // Check if file exists in request
     if (!req.file) {
-        logger.warn('Image upload failed - No file provided', { userId: userId });
+        logger.warn('Image upload failed - No file provided', {userId: userId});
         res.status(400);
         throw new Error('Please upload a file');
     }
@@ -33,7 +33,6 @@ exports.uploadImage = asyncHandler(async (req, res) => {
             _id: image._id,
             fileName: image.fileName,
             originalName: image.originalName,
-            url: `/${process.env.UPLOAD_IMAGE_PATH || 'uploads'}/${image.filename}`,
             message: 'Image uploaded successfully'
         });
     } catch (error) {
@@ -46,7 +45,7 @@ exports.uploadImage = asyncHandler(async (req, res) => {
             });
         }
 
-        logger.error(`Image upload error: ${error.message}`, { userId: userId });
+        logger.error(`Image upload error: ${error.message}`, {userId: userId});
         res.status(500);
         throw new Error('Image upload failed');
     }

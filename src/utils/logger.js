@@ -1,5 +1,5 @@
 const winston = require('winston');
-const { ElasticsearchTransport } = require('winston-elasticsearch');
+const {ElasticsearchTransport} = require('winston-elasticsearch');
 const path = require('path');
 const fs = require('fs');
 
@@ -11,8 +11,8 @@ if (!fs.existsSync(logDir)) {
 
 // Define log format
 const logFormat = winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.errors({ stack: true }),
+    winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+    winston.format.errors({stack: true}),
     winston.format.json()
 );
 
@@ -24,8 +24,8 @@ const transports = [
             winston.format.simple()
         ),
     }),
-    new winston.transports.File({ filename: path.join(logDir, 'error.log'), level: 'error' }),
-    new winston.transports.File({ filename: path.join(logDir, 'combined.log') })
+    new winston.transports.File({filename: path.join(logDir, 'error.log'), level: 'error'}),
+    new winston.transports.File({filename: path.join(logDir, 'combined.log')})
 ];
 
 // Add Elasticsearch transport only if ELASTICSEARCH_NODE is defined
@@ -33,7 +33,7 @@ if (process.env.ELASTICSEARCH_NODE) {
     try {
         const esTransportOpts = {
             level: 'info',
-            clientOpts: { node: process.env.ELASTICSEARCH_NODE },
+            clientOpts: {node: process.env.ELASTICSEARCH_NODE},
             indexPrefix: 'api-logs',
         };
         transports.push(new ElasticsearchTransport(esTransportOpts));
@@ -46,7 +46,7 @@ if (process.env.ELASTICSEARCH_NODE) {
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
     format: logFormat,
-    defaultMeta: { service: 'api-service' },
+    defaultMeta: {service: 'api-service'},
     transports,
     exitOnError: false
 });
@@ -63,12 +63,11 @@ const createFallbackLogger = () => {
 
 // Log unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection', { reason, promise });
+    logger.error('Unhandled Rejection', {reason, promise});
 });
 
 // Export logger with fallback
 module.exports = logger || createFallbackLogger();
-
 
 
 // const { createLogger, format, transports } = require('winston');

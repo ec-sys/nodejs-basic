@@ -6,7 +6,7 @@ class RoleRepository {
     }
 
     async findByIds(ids) {
-        return Role.find({ '_id': { $in: ids } }).exec();
+        return Role.find({'_id': {$in: ids}}).exec();
     }
 }
 

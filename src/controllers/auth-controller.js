@@ -1,4 +1,5 @@
 const authService = require('../services/auth-service');
+const commonUtil = require("../utils/common-util");
 
 exports.login = async (req, res) => {
     try {
@@ -19,6 +20,7 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
+    // remove token from redis
 };
 
 exports.refreshToken = async (req, res) => {

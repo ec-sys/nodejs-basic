@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client } = require('@elastic/elasticsearch');
+const {Client} = require('@elastic/elasticsearch');
 
 const elasticClient = new Client({
     node: process.env.ELASTIC_NODE
@@ -20,20 +20,20 @@ const initializeElastic = async () => {
                 body: {
                     mappings: {
                         properties: {
-                            timestamp: { type: 'date' },
-                            requestId: { type: 'keyword' },
-                            method: { type: 'keyword' },
-                            url: { type: 'text' },
-                            status: { type: 'integer' },
-                            responseTime: { type: 'float' },
-                            userId: { type: 'keyword' },
-                            userAgent: { type: 'text' },
-                            ip: { type: 'ip' },
-                            message: { type: 'text' },
-                            level: { type: 'keyword' },
-                            context: { type: 'object', enabled: true },
-                            error: { type: 'text' },
-                            stack: { type: 'text' }
+                            timestamp: {type: 'date'},
+                            requestId: {type: 'keyword'},
+                            method: {type: 'keyword'},
+                            url: {type: 'text'},
+                            status: {type: 'integer'},
+                            responseTime: {type: 'float'},
+                            userId: {type: 'keyword'},
+                            userAgent: {type: 'text'},
+                            ip: {type: 'ip'},
+                            message: {type: 'text'},
+                            level: {type: 'keyword'},
+                            context: {type: 'object', enabled: true},
+                            error: {type: 'text'},
+                            stack: {type: 'text'}
                         }
                     }
                 }
@@ -47,4 +47,4 @@ const initializeElastic = async () => {
     }
 };
 
-module.exports = { elasticClient, initializeElastic };
+module.exports = {elasticClient, initializeElastic};

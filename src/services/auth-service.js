@@ -1,10 +1,13 @@
 const userRepository = require('../repositories/user-repository');
 const roleRepository = require('../repositories/role-repository');
+const {redisClient} = require('../configs/redis-config');
+const {v4: uuidv4} = require('uuid');
+const {REFRESH_TOKEN, ACCESS_TOKEN} = require('../constants/common-constant');
 
 const cryptUtil = require('../utils/crypt-util');
 const jwt = require('jsonwebtoken');
 
-function generateAccessToken(user, roleNames) {
+function generateAccessToken(user, roleNames, tokenId) {
     let payload = {
         tenant: {},
         user: {
@@ -15,14 +18,42 @@ function generateAccessToken(user, roleNames) {
             roles: roleNames
         }
     }
-    return jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRE, jwtid: "id_in_redis"});
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+        jwtid: tokenId
+    });
 }
 
-function generateRefreshToken(user) {
+function generateRefreshToken(user, tokenId) {
     let payload = {
         id: user._id
     }
-    return jwt.sign(payload, process.env.REFRESH_SECRET, {expiresIn: process.env.REFRESH_EXPIRE});
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+        jwtid: tokenId
+    });
+}
+
+
+/**
+ * return {accessTokenId, refreshTokenId}
+ * @param user
+ */
+async function saveTokenId(user) {
+    let userId = user._id.toString();
+
+    let accessJti = uuidv4();
+    let accessExpirySecond = parseInt(process.env.ACCESS_TOKEN_EXPIRY) * 60 * 24;
+    await redisClient.setEx(`${ACCESS_TOKEN}:${accessJti}`, accessExpirySecond, userId);
+
+    let refreshJti = uuidv4();
+    let refreshExpirySecond = parseInt(process.env.REFRESH_TOKEN_EXPIRY) * 60 * 24;
+    await redisClient.setEx(`${REFRESH_TOKEN}:${refreshJti}`, refreshExpirySecond, userId);
+
+    return {
+        accessJti: accessJti,
+        refreshJti: refreshJti
+    }
 }
 
 class AuthService {
@@ -51,9 +82,10 @@ class AuthService {
             roleNames.push(item.name);
         });
 
+        let tokenId = await saveTokenId(user);
         return {
-            accessToken: generateAccessToken(user, roleNames),
-            refreshToken: generateRefreshToken(user)
+            accessToken: generateAccessToken(user, roleNames, tokenId.accessJti),
+            refreshToken: generateRefreshToken(user, tokenId.refreshJti)
         }
     }
 }

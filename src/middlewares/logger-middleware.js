@@ -26,4 +26,4 @@ const apiLogger = (req, res, next) => {
     next();
 };
 
-module.exports = { apiLogger };
+module.exports = {apiLogger};

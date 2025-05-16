@@ -1,12 +1,10 @@
 const jwt = require('jsonwebtoken');
+const {redisClient} = require('../configs/redis-config');
+const {ACCESS_TOKEN} = require("../constants/common-constant");
+const commonUtil = require('../utils/common-util');
 
 exports.protect = async (req, res, next) => {
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        // Set token from Bearer token in header
-        token = req.headers.authorization.split(' ')[1];
-    }
-
+    let token = commonUtil.getTokenFromRequest(req);
     // Make sure token exists
     if (!token) {
         return res.status(401).json({
@@ -17,15 +15,14 @@ exports.protect = async (req, res, next) => {
 
     try {
         // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         // Verify token id in cache for prevent relay token
-        let jti = decoded.jti;
-        if(!jti) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid token',
-            });
+        if (!decoded || !decoded.jti) return res.status(401).json({message: 'Invalid token'});
+        // Check if JTI exists in Redis
+        const jtiExists = await redisClient.exists(`${ACCESS_TOKEN}:${decoded.jti}`);
+        if (!jtiExists) {
+            return res.status(401).json({message: 'Token has been revoked or is invalid'});
         }
 
         // Set payload and next process
@@ -46,9 +43,9 @@ exports.authorize = (...roles) => {
         let isAccept = false;
         // Validate user roles in list roles
         req.user.roles.forEach((role) => {
-            if(roles.includes(role)) {
+            if (roles.includes(role)) {
                 isAccept = true;
-                return;
+
             }
         })
         if (!isAccept) {
