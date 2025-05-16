@@ -1,13 +1,9 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const fileUtil = require("./file-util");
 
 // Create uploads folder if it doesn't exist
-const uploadDir = path.join(__dirname, `../../${process.env.UPLOAD_IMAGE_PATH || 'uploads/images'}`);
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const uploadDir = fileUtil.getUploadDir(process.env.UPLOAD_IMAGE_PATH);
 
 // Configure storage
 const storage = multer.diskStorage({
@@ -16,7 +12,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         // Create unique filename with original extension
-        const fileExt = path.extname(file.originalname);
+        const fileExt = fileUtil.getExtName(file.originalname);
         const fileName = `${uuidv4()}${fileExt}`;
         cb(null, fileName);
     }
