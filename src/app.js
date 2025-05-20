@@ -3,10 +3,6 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const {apiLogger} = require('./middlewares/logger-middleware');
-const logger = require('./utils/logger');
-
-const {EVENT_REDIS_CONNECTED} = require('./constants/event-constant');
-const ioEvent = require('./events/io-event-bus');
 
 // Load env vars
 dotenv.config();
@@ -41,12 +37,6 @@ if (process.env.NODE_ENV === 'development') {
 
 // API logger middleware
 app.use(apiLogger);
-// Rate limiter middleware
-ioEvent.on(EVENT_REDIS_CONNECTED, (data) => {
-    const {rateLimiter} = require('./middlewares/rate-limit-middleware');
-    app.use(rateLimiter);
-    logger.info('Rate limiter middleware initialized');
-});
 
 // Routing
 app.use('/api/users', userRoutes);

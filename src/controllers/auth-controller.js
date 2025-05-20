@@ -27,11 +27,11 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
     try {
         const accessToken = commonUtil.getTokenFromRequest(req);
-        const { refreshToken } = req.body;
+        const {refreshToken} = req.body;
 
         // Ensure both tokens are provided
         if (!accessToken || !refreshToken) {
-            return res.status(400).json({ message: 'Both access token and refresh token are required' });
+            return res.status(400).json({message: 'Both access token and refresh token are required'});
         }
 
         // Decode both tokens
@@ -39,12 +39,12 @@ exports.logout = async (req, res) => {
         const refreshDecoded = jwt.decode(refreshToken);
 
         if (!accessDecoded.jti || !refreshDecoded.jti) {
-            return res.status(401).json({ message: 'Invalid tokens' });
+            return res.status(401).json({message: 'Invalid tokens'});
         }
 
         // Verify tokens belong to same user
         if (accessDecoded.user.id !== refreshDecoded.user.id) {
-            return res.status(401).json({ message: 'Tokens do not match' });
+            return res.status(401).json({message: 'Tokens do not match'});
         }
 
         // Delete tokens from Redis
@@ -69,11 +69,11 @@ exports.logout = async (req, res) => {
 exports.refreshToken = async (req, res) => {
     try {
         const accessToken = commonUtil.getTokenFromRequest(req);
-        const { refreshToken } = req.body;
+        const {refreshToken} = req.body;
 
         // Ensure both tokens are provided
         if (!accessToken || !refreshToken) {
-            return res.status(400).json({ message: 'Both access token and refresh token are required' });
+            return res.status(400).json({message: 'Both access token and refresh token are required'});
         }
 
         // Decode both tokens
@@ -81,18 +81,18 @@ exports.refreshToken = async (req, res) => {
         const refreshDecoded = jwt.decode(refreshToken);
 
         if (!accessDecoded.jti || !refreshDecoded.jti) {
-            return res.status(401).json({ message: 'Invalid tokens' });
+            return res.status(401).json({message: 'Invalid tokens'});
         }
 
         // Verify tokens belong to same user
         if (accessDecoded.user.id !== refreshDecoded.user.id) {
-            return res.status(401).json({ message: 'Tokens do not match' });
+            return res.status(401).json({message: 'Tokens do not match'});
         }
 
         // Check if the refresh token exists in Redis
         const userId = await redisClient.get(`${REFRESH_TOKEN}:${refreshDecoded.jti}`);
         if (!userId) {
-            return res.status(401).json({ message: 'Refresh token is invalid or expired' });
+            return res.status(401).json({message: 'Refresh token is invalid or expired'});
         }
 
         // Delete both old tokens from Redis
@@ -123,7 +123,7 @@ exports.validateAccessToken = async (req, res) => {
 
         // Ensure the access token is provided
         if (!accessToken) {
-            return res.status(400).json({ message: 'Access token is required' });
+            return res.status(400).json({message: 'Access token is required'});
         }
 
         // Decode the access token
@@ -131,13 +131,13 @@ exports.validateAccessToken = async (req, res) => {
 
         // Check if the token is valid and contains a `jti`
         if (!decoded || !decoded.jti) {
-            return res.status(401).json({ message: 'Invalid access token' });
+            return res.status(401).json({message: 'Invalid access token'});
         }
 
         // Check if the access token exists in Redis
         const tokenExists = await redisClient.get(`${ACCESS_TOKEN}:${decoded.jti}`);
         if (!tokenExists) {
-            return res.status(401).json({ message: 'Access token is invalid or expired' });
+            return res.status(401).json({message: 'Access token is invalid or expired'});
         }
 
         res.status(200).json({
@@ -159,7 +159,7 @@ exports.validateRefreshToken = async (req, res) => {
 
         // Ensure the refresh token is provided
         if (!refreshToken) {
-            return res.status(400).json({ message: 'Refresh token is required' });
+            return res.status(400).json({message: 'Refresh token is required'});
         }
 
         // Decode the refresh token
@@ -167,13 +167,13 @@ exports.validateRefreshToken = async (req, res) => {
 
         // Check if the token is valid and contains a `jti`
         if (!decoded || !decoded.jti) {
-            return res.status(401).json({ message: 'Invalid refresh token' });
+            return res.status(401).json({message: 'Invalid refresh token'});
         }
 
         // Check if the refresh token exists in Redis
         const tokenExists = await redisClient.get(`${REFRESH_TOKEN}:${decoded.jti}`);
         if (!tokenExists) {
-            return res.status(401).json({ message: 'Refresh token is invalid or expired' });
+            return res.status(401).json({message: 'Refresh token is invalid or expired'});
         }
 
         res.status(200).json({

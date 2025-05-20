@@ -91,6 +91,7 @@ class AuthService {
             refreshToken: generateRefreshToken(user, tokenId.refreshJti)
         }
     }
+
     async createToken(user) {
         // Get role names
         let roleNames = [];

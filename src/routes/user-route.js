@@ -7,6 +7,16 @@ const {protect, authorize} = require('../middlewares/auth-middleware');
 router.use(protect);
 router.use(authorize('ADMIN'));
 
+const {EVENT_REDIS_CONNECTED} = require('../constants/event-constant');
+const ioEvent = require('../events/io-event-bus');
+const logger = require("../utils/logger");
+
+const {rateLimiter} = require('../middlewares/rate-limit-middleware');
+router.use(rateLimiter);
+ioEvent.on(EVENT_REDIS_CONNECTED, (data) => {
+    logger.info('Rate limiter middleware initialized');
+});
+
 // GET /api/users
 router.get('/', userController.getAllUsers);
 
