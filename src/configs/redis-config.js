@@ -1,4 +1,6 @@
 const Redis = require('redis');
+const ioEvent = require('../events/io-event-bus');
+const {EVENT_REDIS_CONNECTED} = require("../constants/event-constant");
 
 const redisClient = Redis.createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379'
@@ -13,6 +15,7 @@ const initializeRedis = async () => {
 
         redisClient.on('connect', () => {
             console.log('Redis Client Connected');
+            ioEvent.emit(EVENT_REDIS_CONNECTED, {"status": "ok"});
         });
 
         redisClient.on('reconnecting', () => {

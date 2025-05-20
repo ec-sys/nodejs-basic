@@ -1,22 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const connectDB = require('./configs/db-config');
 const morgan = require('morgan');
 const {apiLogger} = require('./middlewares/logger-middleware');
+const logger = require('./utils/logger');
+
+const {EVENT_REDIS_CONNECTED} = require('./constants/event-constant');
+const ioEvent = require('./events/io-event-bus');
 
 // Load env vars
 dotenv.config();
 
 // Connect to database
+const connectDB = require('./configs/db-config');
 connectDB();
 
-// Initialize Elasticsearch
-// const { initializeElastic } = require('./configs/elastic-config');
-// initializeElastic();
-
 // Initialize Redis
-const {initializeRedis} = require('./configs/redis-config')
+const {initializeRedis} = require('./configs/redis-config');
 initializeRedis();
 
 // Route files
@@ -41,6 +41,12 @@ if (process.env.NODE_ENV === 'development') {
 
 // API logger middleware
 app.use(apiLogger);
+// Rate limiter middleware
+ioEvent.on(EVENT_REDIS_CONNECTED, (data) => {
+    const {rateLimiter} = require('./middlewares/rate-limit-middleware');
+    app.use(rateLimiter);
+    logger.info('Rate limiter middleware initialized');
+});
 
 // Routing
 app.use('/api/users', userRoutes);
